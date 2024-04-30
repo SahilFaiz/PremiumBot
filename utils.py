@@ -143,19 +143,19 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
             if tryag:
                 mark = InlineKeyboardMarkup([
                     [
-                        InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                        InlineKeyboardButton("Join Channel 1", url="https://t.me/+3JE024-Q2eY4NTZl")
                     ],
                 [
-                    InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                    InlineKeyboardButton("Join Channel 2", url="https://t.me/+SYG5rbzkFaExMzdl")
                 ],
                 [
-                    InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                    InlineKeyboardButton("Join Channel 3", url="https://t.me/+8JO92sZeNjs4YjE1")
                 ],
                 [
-                    InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                    InlineKeyboardButton("Join Channel 4", url="https://t.me/+BOlY69s6-zYxMmE1")
                 ],
                 [
-                    InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                    InlineKeyboardButton("Join Channel 5", url="https://t.me/+flmW5O8rk39hMDA1")
                 ],
                     [
                         InlineKeyboardButton("Try Again!", url=tryag)
@@ -164,19 +164,19 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
             else:
                 mark = InlineKeyboardMarkup([
                     [
-                        InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                        InlineKeyboardButton("Join Channel 1", url="https://t.me/+3JE024-Q2eY4NTZl")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                        InlineKeyboardButton("Join Channel 2", url="https://t.me/+SYG5rbzkFaExMzdl")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                        InlineKeyboardButton("Join Channel 3", url="https://t.me/+8JO92sZeNjs4YjE1")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                        InlineKeyboardButton("Join Channel 4", url="https://t.me/+BOlY69s6-zYxMmE1")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel", url="https://t.me/animechatvoidx")
+                        InlineKeyboardButton("Join Channel 5", url="https://t.me/+flmW5O8rk39hMDA1")
                     ],
                 ])
             await m.reply_text(
