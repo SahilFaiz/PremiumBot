@@ -51,7 +51,7 @@ async def start(client, message):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL,
                                   script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
-    if not await forcedjoined(client, message, f"https://t.me/{client.me.username}?start={message.text.split(maxsplit=1)[1:][0]}" if len(message.text.split(maxsplit=1) > 1) else ""):
+    if not await forcedjoined(client, message, f"https://t.me/{client.me.username}?start={message.text.split(maxsplit=1)[1:][0]}" if len(message.text.split(maxsplit=1)) > 1 else ""):
         return
     if len(message.command) != 2:
         buttons = [[
