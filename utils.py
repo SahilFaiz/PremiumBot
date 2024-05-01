@@ -80,10 +80,10 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
     with suppress(UserIsBlocked):
         try:
             try:
-                u = await c.get_chat_member(-1002134533863, m.from_user.id)
+                u = await c.get_chat_member(-1001680440476, m.from_user.id)
             except FloodWait as fo:
                 await sleep(fo.value + 1)
-                u = await c.get_chat_member(-1002134533863, m.from_user.id)
+                u = await c.get_chat_member(-1001680440476, m.from_user.id)
             if u.status in (ChatMemberStatus.BANNED,
                             ChatMemberStatus.RESTRICTED):
                 await m.reply_text(
@@ -92,10 +92,10 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
                 )
                 return 0
             try:
-                u = await c.get_chat_member(-1002061813431, m.from_user.id)
+                u = await c.get_chat_member(-1001673528398, m.from_user.id)
             except FloodWait as fo:
                 await sleep(fo.value + 1)
-                u = await c.get_chat_member(-1002061813431, m.from_user.id)
+                u = await c.get_chat_member(-1001673528398, m.from_user.id)
             if u.status in (ChatMemberStatus.BANNED,
                             ChatMemberStatus.RESTRICTED):
                 await m.reply_text(
@@ -104,10 +104,10 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
                 )
                 return 0
             try:
-                u = await c.get_chat_member(-1002028508208, m.from_user.id)
+                u = await c.get_chat_member(-1001829070430, m.from_user.id)
             except FloodWait as fo:
                 await sleep(fo.value + 1)
-                u = await c.get_chat_member(-1002028508208, m.from_user.id)
+                u = await c.get_chat_member(-1001829070430, m.from_user.id)
             if u.status in (ChatMemberStatus.BANNED,
                             ChatMemberStatus.RESTRICTED):
                 await m.reply_text(
@@ -116,10 +116,10 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
                 )
                 return 0
             try:
-                u = await c.get_chat_member(-1002088277911, m.from_user.id)
+                u = await c.get_chat_member(-1001487979336, m.from_user.id)
             except FloodWait as fo:
                 await sleep(fo.value + 1)
-                u = await c.get_chat_member(-1002088277911, m.from_user.id)
+                u = await c.get_chat_member(-1001487979336, m.from_user.id)
             if u.status in (ChatMemberStatus.BANNED,
                             ChatMemberStatus.RESTRICTED):
                 await m.reply_text(
@@ -128,10 +128,10 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
                 )
                 return 0
             try:
-                u = await c.get_chat_member(-1002081595390, m.from_user.id)
+                u = await c.get_chat_member(-1001668949698, m.from_user.id)
             except FloodWait as fo:
                 await sleep(fo.value + 1)
-                u = await c.get_chat_member(-1002081595390, m.from_user.id)
+                u = await c.get_chat_member(-1001668949698, m.from_user.id)
             if u.status in (ChatMemberStatus.BANNED,
                             ChatMemberStatus.RESTRICTED):
                 await m.reply_text(
@@ -143,19 +143,19 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
             if tryag:
                 mark = InlineKeyboardMarkup([
                     [
-                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅ ", url="https://t.me/+3JE024-Q2eY4NTZl")
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅ ", url="https://t.me/Movies7xBoTs")
                     ],
                 [
-                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/+SYG5rbzkFaExMzdl")
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/Anime7x")
                 ],
                 [
-                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/+8JO92sZeNjs4YjE1")
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/OnLyFans_OnlYFap")
                 ],
                 [
-                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/+BOlY69s6-zYxMmE1")
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/Movies7x")
                 ],
                 [
-                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/+flmW5O8rk39hMDA1")
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/DraMaLiNKz")
                 ],
                     [
                         InlineKeyboardButton("🔖 𝘾𝙝𝙚𝙘𝙠 𝙨𝙪𝙗𝙨𝙘𝙧𝙞𝙥𝙩𝙞𝙤𝙣 𝙨𝙩𝙖𝙩𝙪𝙨💠", url=tryag)
@@ -164,23 +164,23 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
             else:
                 mark = InlineKeyboardMarkup([
                     [
-                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅", url="https://t.me/+3JE024-Q2eY4NTZl")
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅", url="https://t.me/Movies7xBoTs")
                     ],
                     [
-                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/+SYG5rbzkFaExMzdl")
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/Anime7x")
                     ],
                     [
-                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/+8JO92sZeNjs4YjE1")
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/OnLyFans_OnlYFap")
                     ],
                     [
-                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/+BOlY69s6-zYxMmE1")
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/Movies7x")
                     ],
                     [
-                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/+flmW5O8rk39hMDA1")
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/DraMaLiNKz")
                     ],
                 ])
             await m.reply_text(
-                text="<b> 🍁 ᴛᴏ ᴀᴄᴄᴇꜱꜱ ᴏᴜʀ ʙᴏᴛ'ꜱ ꜰᴇᴀᴛᴜʀᴇꜱ, ꜱᴜʙꜱᴄʀɪʙᴇ ᴛᴏ ᴛʜᴇꜱᴇ 5 ᴄʜᴀɴɴᴇʟꜱ ɢɪᴠᴇɴ ʟɪɴᴋ ʙᴇʟᴏᴡ. 🍁/🔓 ᴜɴʟᴏᴄᴋ ꜱᴇᴀᴍʟᴇꜱꜱ ᴇɴᴛᴇʀᴛᴀɪɴᴍᴇɴᴛ! ᴡɪᴛʜ ᴏᴜʀ ʙᴏᴛ, 🔎 ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ-ꜱᴇʀɪᴇꜱ ʙʏ ɴᴀᴍᴇ ᴀɴᴅ ᴀᴄᴄᴇꜱꜱ ᴀᴅ-ꜰʀᴇᴇ ꜰɪʟᴇꜱ ɪɴꜱᴛᴀɴᴛʟʏ 📥 </b>",
+                text="<b> 🍁 𝖳𝗈 𝖺𝖼𝖼𝖾𝗌𝗌 𝗈𝗎𝗋 𝖻𝗈𝗍'𝗌 𝖿𝖾𝖺𝗍𝗎𝗋𝖾𝗌, 𝗌𝗎𝖻𝗌𝖼𝗋𝗂𝖻𝖾 𝗍𝗈 𝗍𝗁𝖾𝗌𝖾 5 𝖼𝗁𝖺𝗇𝗇𝖾𝗅𝗌 𝗅𝗂𝗇𝗄 𝗉𝗋𝗈𝗏𝗂𝖽𝖾𝖽 𝖻𝖾𝗅𝗈𝗐. 🌟 𝖶𝗂𝗍𝗁 𝗈𝗎𝗋 𝖻𝗈𝗍, 𝗌𝖾𝖺𝗋𝖼𝗁 𝗆𝗈𝗏𝗂𝖾𝗌/𝗌𝖾𝗋𝗂𝖾𝗌 𝖻𝗒 𝗇𝖺𝗆𝖾 𝖺𝗇𝖽 𝖺𝖼𝖼𝖾𝗌𝗌 𝖺𝖽-𝖿𝗋𝖾𝖾 𝖿𝗂𝗅𝖾𝗌 𝗂𝗇𝗌𝗍𝖺𝗇𝗍𝗅𝗒 📥 </b>",
                 reply_markup=mark,
             )
             return 0
