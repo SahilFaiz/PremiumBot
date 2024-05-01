@@ -143,19 +143,19 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
             if tryag:
                 mark = InlineKeyboardMarkup([
                     [
-                        InlineKeyboardButton("Join Channel 1", url="https://t.me/+3JE024-Q2eY4NTZl")
+                        InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅ ", url="https://t.me/+3JE024-Q2eY4NTZl")
                     ],
                 [
-                    InlineKeyboardButton("Join Channel 2", url="https://t.me/+SYG5rbzkFaExMzdl")
+                    InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/+SYG5rbzkFaExMzdl")
                 ],
                 [
-                    InlineKeyboardButton("Join Channel 3", url="https://t.me/+8JO92sZeNjs4YjE1")
+                    InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/+8JO92sZeNjs4YjE1")
                 ],
                 [
-                    InlineKeyboardButton("Join Channel 4", url="https://t.me/+BOlY69s6-zYxMmE1")
+                    InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/+BOlY69s6-zYxMmE1")
                 ],
                 [
-                    InlineKeyboardButton("Join Channel 5", url="https://t.me/+flmW5O8rk39hMDA1")
+                    InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/+flmW5O8rk39hMDA1")
                 ],
                     [
                         InlineKeyboardButton("Try Again!", url=tryag)
@@ -164,23 +164,24 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
             else:
                 mark = InlineKeyboardMarkup([
                     [
-                        InlineKeyboardButton("Join Channel 1", url="https://t.me/+3JE024-Q2eY4NTZl")
+                        InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅", url="https://t.me/+3JE024-Q2eY4NTZl")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel 2", url="https://t.me/+SYG5rbzkFaExMzdl")
+                        InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/+SYG5rbzkFaExMzdl")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel 3", url="https://t.me/+8JO92sZeNjs4YjE1")
+                        InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/+8JO92sZeNjs4YjE1")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel 4", url="https://t.me/+BOlY69s6-zYxMmE1")
+                        InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/+BOlY69s6-zYxMmE1")
                     ],
                     [
-                        InlineKeyboardButton("Join Channel 5", url="https://t.me/+flmW5O8rk39hMDA1")
+                        InlineKeyboardButton("▱ 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/+flmW5O8rk39hMDA1")
                     ],
                 ])
             await m.reply_text(
-                text="<b> ᴛᴏ ᴀᴄᴄᴇꜱꜱ ᴏᴜʀ ʙᴏᴛ'ꜱ ꜰᴇᴀᴛᴜʀᴇꜱ, ꜱᴜʙꜱᴄʀɪʙᴇ ᴛᴏ ᴛʜᴇꜱᴇ 5 ᴄʜᴀɴɴᴇʟꜱ. ʏᴏᴜʀ ᴊᴏᴜʀɴᴇʏ ᴛᴏ ᴇxᴄʟᴜꜱɪᴠᴇ ᴄᴏɴᴛᴇɴᴛ ʙᴇɢɪɴꜱ ʜᴇʀᴇ. ꜱᴜʙꜱᴄʀɪʙᴇ ɴᴏᴡ ᴀɴᴅ ᴜɴʟᴏᴄᴋ ᴛʜᴇ ꜰᴜʟʟ ʙᴏᴛ ꜰᴇᴀᴛᴜʀᴇꜱ!/ᴜɴʟᴏᴄᴋ ꜱᴇᴀᴍʟᴇꜱꜱ ᴇɴᴛᴇʀᴛᴀɪɴᴍᴇɴᴛ! ᴡɪᴛʜ ᴏᴜʀ ʙᴏᴛ, ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ-ꜱᴇʀɪᴇꜱ ʙʏ ɴᴀᴍᴇ ᴀɴᴅ ᴀᴄᴄᴇꜱꜱ ᴀᴅ-ꜰʀᴇᴇ ꜰɪʟᴇꜱ ɪɴꜱᴛᴀɴᴛʟʏ </b>",
+                text="<b> 🍁 ᴛᴏ ᴀᴄᴄᴇꜱꜱ ᴏᴜʀ ʙᴏᴛ'ꜱ ꜰᴇᴀᴛᴜʀᴇꜱ, ꜱᴜʙꜱᴄʀɪʙᴇ ᴛᴏ ᴛʜᴇꜱᴇ 5 ᴄʜᴀɴɴᴇʟꜱ ɢɪᴠᴇɴ ʟɪɴᴋ ʙᴇʟᴏᴡ. 🍁 
+                🔓 ᴜɴʟᴏᴄᴋ ꜱᴇᴀᴍʟᴇꜱꜱ ᴇɴᴛᴇʀᴛᴀɪɴᴍᴇɴᴛ! ᴡɪᴛʜ ᴏᴜʀ ʙᴏᴛ, 🔎 ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ-ꜱᴇʀɪᴇꜱ ʙʏ ɴᴀᴍᴇ ᴀɴᴅ ᴀᴄᴄᴇꜱꜱ ᴀᴅ-ꜰʀᴇᴇ ꜰɪʟᴇꜱ ɪɴꜱᴛᴀɴᴛʟʏ 📥 </b>",
                 reply_markup=mark,
             )
             return 0
