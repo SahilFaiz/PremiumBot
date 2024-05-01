@@ -180,7 +180,7 @@ async def forcedjoined(c: Client, m: Message, tryag: str = ""):
                     ],
                 ])
             await m.reply_text(
-                text="You need to be a member of the below listed channels first!\nJOIN ALL THE BELOW CHANNELS!",
+                text="<b> ᴛᴏ ᴀᴄᴄᴇꜱꜱ ᴏᴜʀ ʙᴏᴛ'ꜱ ꜰᴇᴀᴛᴜʀᴇꜱ, ꜱᴜʙꜱᴄʀɪʙᴇ ᴛᴏ ᴛʜᴇꜱᴇ 5 ᴄʜᴀɴɴᴇʟꜱ. ʏᴏᴜʀ ᴊᴏᴜʀɴᴇʏ ᴛᴏ ᴇxᴄʟᴜꜱɪᴠᴇ ᴄᴏɴᴛᴇɴᴛ ʙᴇɢɪɴꜱ ʜᴇʀᴇ. ꜱᴜʙꜱᴄʀɪʙᴇ ɴᴏᴡ ᴀɴᴅ ᴜɴʟᴏᴄᴋ ᴛʜᴇ ꜰᴜʟʟ ʙᴏᴛ ꜰᴇᴀᴛᴜʀᴇꜱ!/ᴜɴʟᴏᴄᴋ ꜱᴇᴀᴍʟᴇꜱꜱ ᴇɴᴛᴇʀᴛᴀɪɴᴍᴇɴᴛ! ᴡɪᴛʜ ᴏᴜʀ ʙᴏᴛ, ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ-ꜱᴇʀɪᴇꜱ ʙʏ ɴᴀᴍᴇ ᴀɴᴅ ᴀᴄᴄᴇꜱꜱ ᴀᴅ-ꜰʀᴇᴇ ꜰɪʟᴇꜱ ɪɴꜱᴛᴀɴᴛʟʏ </b>",
                 reply_markup=mark,
             )
             return 0
