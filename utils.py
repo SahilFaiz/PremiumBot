@@ -1,15 +1,20 @@
 import logging
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, IS_SHORTLINK, LOG_CHANNEL, TUTORIAL, GRP_LNK, CHNL_LNK, CUSTOM_FILE_CAPTION, SECOND_SHORTLINK_URL, SECOND_SHORTLINK_API
-from imdb import Cinemagoer 
+from asyncio import sleep
+from contextlib import suppress
+
+from pyrogram.enums import ChatType, ChatMemberStatus
+from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid, RPCError
+from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, IS_SHORTLINK, \
+    LOG_CHANNEL, TUTORIAL, GRP_LNK, CHNL_LNK, CUSTOM_FILE_CAPTION, SECOND_SHORTLINK_URL, SECOND_SHORTLINK_API
+from imdb import Cinemagoer
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from pyrogram import enums
+from pyrogram import enums, Client
 from typing import Union
 from Script import script
 import pytz
-import random 
+import random
 import re
 import os
 from datetime import datetime, date
@@ -30,7 +35,7 @@ BTN_URL_REGEX = re.compile(
     r"(\[([^\[]+?)\]\((buttonurl|buttonalert):(?:/{0,2})(.+?)(:same)?\))"
 )
 
-imdb = Cinemagoer() 
+imdb = Cinemagoer()
 TOKENS = {}
 VERIFIED = {}
 BANNED = {}
@@ -39,12 +44,13 @@ SMART_OPEN = '“'
 SMART_CLOSE = '”'
 START_CHAR = ('\'', '"', SMART_OPEN)
 
-# temp db for banned 
+
+# temp db for banned
 class temp(object):
     BANNED_USERS = []
     BANNED_CHATS = []
     ME = None
-    CURRENT=int(os.environ.get("SKIP", 2))
+    CURRENT = int(os.environ.get("SKIP", 2))
     CANCEL = False
     MELCOW = {}
     U_NAME = None
@@ -52,6 +58,7 @@ class temp(object):
     GETALL = {}
     SHORT = {}
     SETTINGS = {}
+
 
 async def is_subscribed(bot, query):
     try:
@@ -66,6 +73,128 @@ async def is_subscribed(bot, query):
 
     return False
 
+
+async def forcedjoined(c: Client, m: Message, tryag: str = ""):
+    if m.chat.type != ChatType.PRIVATE:
+        return 1
+    with suppress(UserIsBlocked):
+        try:
+            try:
+                u = await c.get_chat_member(-1001680440476, m.from_user.id)
+            except FloodWait as fo:
+                await sleep(fo.value + 1)
+                u = await c.get_chat_member(-1001680440476, m.from_user.id)
+            if u.status in (ChatMemberStatus.BANNED,
+                            ChatMemberStatus.RESTRICTED):
+                await m.reply_text(
+                    text="Sorry, You are Banned!\nNow You Can't Use Me.",
+                    disable_web_page_preview=True,
+                )
+                return 0
+            try:
+                u = await c.get_chat_member(-1001673528398, m.from_user.id)
+            except FloodWait as fo:
+                await sleep(fo.value + 1)
+                u = await c.get_chat_member(-1001673528398, m.from_user.id)
+            if u.status in (ChatMemberStatus.BANNED,
+                            ChatMemberStatus.RESTRICTED):
+                await m.reply_text(
+                    text="Sorry, You are Banned!\nNow You Can't Use Me.",
+                    disable_web_page_preview=True,
+                )
+                return 0
+            try:
+                u = await c.get_chat_member(-1001829070430, m.from_user.id)
+            except FloodWait as fo:
+                await sleep(fo.value + 1)
+                u = await c.get_chat_member(-1001829070430, m.from_user.id)
+            if u.status in (ChatMemberStatus.BANNED,
+                            ChatMemberStatus.RESTRICTED):
+                await m.reply_text(
+                    text="Sorry, You are Banned!\nNow You Can't Use Me.",
+                    disable_web_page_preview=True,
+                )
+                return 0
+            try:
+                u = await c.get_chat_member(-1001487979336, m.from_user.id)
+            except FloodWait as fo:
+                await sleep(fo.value + 1)
+                u = await c.get_chat_member(-1001487979336, m.from_user.id)
+            if u.status in (ChatMemberStatus.BANNED,
+                            ChatMemberStatus.RESTRICTED):
+                await m.reply_text(
+                    text="Sorry, You are Banned!\nNow You Can't Use Me.",
+                    disable_web_page_preview=True,
+                )
+                return 0
+            try:
+                u = await c.get_chat_member(-1001668949698, m.from_user.id)
+            except FloodWait as fo:
+                await sleep(fo.value + 1)
+                u = await c.get_chat_member(-1001668949698, m.from_user.id)
+            if u.status in (ChatMemberStatus.BANNED,
+                            ChatMemberStatus.RESTRICTED):
+                await m.reply_text(
+                    text="Sorry, You are Banned!\nNow You Can't Use Me.",
+                    disable_web_page_preview=True,
+                )
+                return 0
+        except UserNotParticipant:
+            if tryag:
+                mark = InlineKeyboardMarkup([
+                    [
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅ ", url="https://t.me/Movies7xBoTs")
+                    ],
+                [
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/Anime7x")
+                ],
+                [
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/OnLyFans_OnlYFap")
+                ],
+                [
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/Movies7x")
+                ],
+                [
+                    InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/DraMaLiNKz")
+                ],
+                    [
+                        InlineKeyboardButton("🔖 𝘾𝙝𝙚𝙘𝙠 𝙨𝙪𝙗𝙨𝙘𝙧𝙞𝙥𝙩𝙞𝙤𝙣 𝙨𝙩𝙖𝙩𝙪𝙨💠", url=tryag)
+                    ]
+                ])
+            else:
+                mark = InlineKeyboardMarkup([
+                    [
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 1! ✅", url="https://t.me/Movies7xBoTs")
+                    ],
+                    [
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 2! ✅", url="https://t.me/Anime7x")
+                    ],
+                    [
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 3! ✅", url="https://t.me/OnLyFans_OnlYFap")
+                    ],
+                    [
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 4! ✅", url="https://t.me/Movies7x")
+                    ],
+                    [
+                        InlineKeyboardButton("🚀 𝗰𝗵𝗮𝗻𝗻𝗲𝗹 𝗹𝗶𝗻𝗸 5! ✅", url="https://t.me/DraMaLiNKz")
+                    ],
+                ])
+            await m.reply_text(
+                text="<b> » 🗃️ 𝖳𝗈 𝖺𝖼𝖼𝖾𝗌𝗌 𝖿𝗂𝗅𝖾𝗌,\n\n🌟 > 𝗃𝗈𝗂𝗇 𝗍𝗁𝖾 5 𝖼𝗁𝖺𝗇𝗇𝖾𝗅𝗌 𝗅𝗂𝗌𝗍𝖾𝖽 𝖻𝖾𝗅𝗈𝗐 < . 𝖠𝖿𝗍𝖾𝗋 𝗃𝗈𝗂𝗇𝗂𝗇𝗀, 𝗍𝗁𝖾 𝖻𝗈𝗍 𝗐𝗂𝗅𝗅 𝗉𝗋𝗈𝗏𝗂𝖽𝖾 𝗍𝗁𝖾 𝖿𝗂𝗅𝖾𝗌.\n\n»  🚀 𝖭𝖾𝖾𝖽 𝖿𝗂𝗅𝖾𝗌 𝖿𝖺𝗌𝗍? 𝖩𝗈𝗂𝗇 𝖿𝗈𝗅𝖽𝖾𝗋👇\n\n>>> https://telegram.me/addlist/oP5DNuM5kvtlYTc9 <<<  </b>",
+                reply_markup=mark,
+            )
+            return 0
+        except RPCError:
+            await m.reply_text(
+                text="Something went Wrong.",
+                disable_web_page_preview=True,
+            )
+            return 0
+        return 1
+    return 0
+
+
+
 async def get_poster(query, bulk=False, id=False, file=None):
     if not id:
         # https://t.me/GetTGLink/4183
@@ -78,19 +207,19 @@ async def get_poster(query, bulk=False, id=False, file=None):
         elif file is not None:
             year = re.findall(r'[1-2]\d{3}', file, re.IGNORECASE)
             if year:
-                year = list_to_str(year[:1]) 
+                year = list_to_str(year[:1])
         else:
             year = None
         movieid = imdb.search_movie(title.lower(), results=10)
         if not movieid:
             return None
         if year:
-            filtered=list(filter(lambda k: str(k.get('year')) == str(year), movieid))
+            filtered = list(filter(lambda k: str(k.get('year')) == str(year), movieid))
             if not filtered:
                 filtered = movieid
         else:
             filtered = movieid
-        movieid=list(filter(lambda k: k.get('kind') in ['movie', 'tv series'], filtered))
+        movieid = list(filter(lambda k: k.get('kind') in ['movie', 'tv series'], filtered))
         if not movieid:
             movieid = filtered
         if bulk:
@@ -130,10 +259,10 @@ async def get_poster(query, bulk=False, id=False, file=None):
         "certificates": list_to_str(movie.get("certificates")),
         "languages": list_to_str(movie.get("languages")),
         "director": list_to_str(movie.get("director")),
-        "writer":list_to_str(movie.get("writer")),
-        "producer":list_to_str(movie.get("producer")),
-        "composer":list_to_str(movie.get("composer")) ,
-        "cinematographer":list_to_str(movie.get("cinematographer")),
+        "writer": list_to_str(movie.get("writer")),
+        "producer": list_to_str(movie.get("producer")),
+        "composer": list_to_str(movie.get("composer")),
+        "cinematographer": list_to_str(movie.get("cinematographer")),
         "music_team": list_to_str(movie.get("music department")),
         "distributors": list_to_str(movie.get("distributors")),
         'release_date': date,
@@ -142,8 +271,10 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'poster': movie.get('full-size cover url'),
         'plot': plot,
         'rating': str(movie.get("rating")),
-        'url':f'https://www.imdb.com/title/tt{movieid}'
+        'url': f'https://www.imdb.com/title/tt{movieid}'
     }
+
+
 # https://github.com/odysseusmax/animated-lamp/blob/2ef4730eb2b5f0596ed6d03e7b05243d93e3415b/bot/utils/broadcast.py#L37
 
 async def broadcast_messages(user_id, message):
@@ -167,6 +298,7 @@ async def broadcast_messages(user_id, message):
     except Exception as e:
         return False, "Error"
 
+
 async def broadcast_messages_group(chat_id, message):
     try:
         kd = await message.copy(chat_id=chat_id)
@@ -180,19 +312,21 @@ async def broadcast_messages_group(chat_id, message):
         return await broadcast_messages_group(chat_id, message)
     except Exception as e:
         return False, "Error"
-    
+
+
 async def search_gagala(text):
     usr_agent = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/61.0.3163.100 Safari/537.36'
-        }
+                      'Chrome/61.0.3163.100 Safari/537.36'
+    }
     text = text.replace(" ", '+')
     url = f'https://www.google.com/search?q={text}'
     response = requests.get(url, headers=usr_agent)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
-    titles = soup.find_all( 'h3' )
+    titles = soup.find_all('h3')
     return [title.getText() for title in titles]
+
 
 async def get_settings(group_id):
     settings = temp.SETTINGS.get(group_id)
@@ -200,13 +334,15 @@ async def get_settings(group_id):
         settings = await db.get_settings(group_id)
         temp.SETTINGS[group_id] = settings
     return settings
-    
+
+
 async def save_group_settings(group_id, key, value):
     current = await get_settings(group_id)
     current[key] = value
     temp.SETTINGS[group_id] = current
     await db.update_settings(group_id, current)
-    
+
+
 def get_size(size):
     """Get size in readable format"""
 
@@ -218,26 +354,29 @@ def get_size(size):
         size /= 1024.0
     return "%.2f %s" % (size, units[i])
 
+
 def split_list(l, n):
     for i in range(0, len(l), n):
-        yield l[i:i + n]  
+        yield l[i:i + n]
+
 
 def get_file_id(msg: Message):
     if msg.media:
         for message_type in (
-            "photo",
-            "animation",
-            "audio",
-            "document",
-            "video",
-            "video_note",
-            "voice",
-            "sticker"
+                "photo",
+                "animation",
+                "audio",
+                "document",
+                "video",
+                "video_note",
+                "voice",
+                "sticker"
         ):
             obj = getattr(msg, message_type)
             if obj:
                 setattr(obj, "message_type", message_type)
                 return obj
+
 
 def extract_user(message: Message) -> Union[int, str]:
     """extracts the user from a message"""
@@ -250,10 +389,10 @@ def extract_user(message: Message) -> Union[int, str]:
 
     elif len(message.command) > 1:
         if (
-            len(message.entities) > 1 and
-            message.entities[1].type == enums.MessageEntityType.TEXT_MENTION
+                len(message.entities) > 1 and
+                message.entities[1].type == enums.MessageEntityType.TEXT_MENTION
         ):
-           
+
             required_entity = message.entities[1]
             user_id = required_entity.user.id
             user_first_name = required_entity.user.first_name
@@ -270,6 +409,7 @@ def extract_user(message: Message) -> Union[int, str]:
         user_first_name = message.from_user.first_name
     return (user_id, user_first_name)
 
+
 def list_to_str(k):
     if not k:
         return "N/A"
@@ -280,6 +420,7 @@ def list_to_str(k):
         return ' '.join(f'{elem}, ' for elem in k)
     else:
         return ' '.join(f'{elem}, ' for elem in k)
+
 
 def last_online(from_user):
     time = ""
@@ -320,6 +461,7 @@ def split_quotes(text: str) -> List:
     if not key:
         key = text[0] + text[0]
     return list(filter(None, [key, rest]))
+
 
 def gfilterparser(text, keyword):
     if "buttonalert" in text:
@@ -377,6 +519,7 @@ def gfilterparser(text, keyword):
     except:
         return note_data, buttons, None
 
+
 def parser(text, keyword):
     if "buttonalert" in text:
         text = (text.replace("\n", "\\n").replace("\t", "\\t"))
@@ -433,6 +576,7 @@ def parser(text, keyword):
     except:
         return note_data, buttons, None
 
+
 def remove_escapes(text: str) -> str:
     res = ""
     is_escaped = False
@@ -450,7 +594,7 @@ def remove_escapes(text: str) -> str:
 def humanbytes(size):
     if not size:
         return ""
-    power = 2**10
+    power = 2 ** 10
     n = 0
     Dic_powerN = {0: ' ', 1: 'Ki', 2: 'Mi', 3: 'Gi', 4: 'Ti'}
     while size > power:
@@ -458,8 +602,9 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
+
 async def get_shortlink(chat_id, link, second=False):
-    settings = await get_settings(chat_id) #fetching settings for group
+    settings = await get_settings(chat_id)  # fetching settings for group
     if 'shortlink' in settings.keys():
         URL = settings['shortlink']
         API = settings['shortlink_api']
@@ -487,7 +632,7 @@ async def get_shortlink(chat_id, link, second=False):
         #   "price": 0,
         #   "currency": "INR",
         #   "purchase_note":""
-        
+
         # })
         # headers = {
         #   'Keep-Alive': '',
@@ -499,7 +644,7 @@ async def get_shortlink(chat_id, link, second=False):
         # parsed_data = json.loads(data)
         # if parsed_data["status"] == "success":
         #   return parsed_data["link"]
-    #method 2
+        # method 2
         url = f'https://{URL}/easy_api'
         params = {
             "key": API,
@@ -517,6 +662,7 @@ async def get_shortlink(chat_id, link, second=False):
         shortzy = Shortzy(api_key=API, base_site=URL)
         link = await shortzy.convert(link)
         return link
+
 
 # async def get_shortlink(chat_id, link, second=False):
 #     if not second:
@@ -622,15 +768,16 @@ async def get_shortlink(chat_id, link, second=False):
 
 #     # link = await shortzy.convert(link)
 #     # return link
-    
+
 async def get_tutorial(chat_id):
-    settings = await get_settings(chat_id) #fetching settings for group
+    settings = await get_settings(chat_id)  # fetching settings for group
     if 'tutorial' in settings.keys():
         TUTORIAL_URL = settings['tutorial']
     else:
         TUTORIAL_URL = TUTORIAL
     return TUTORIAL_URL
-        
+
+
 async def get_verify_shorted_link(link):
     API = SHORTLINK_API
     URL = SHORTLINK_URL
@@ -677,6 +824,7 @@ async def get_verify_shorted_link(link):
             logger.error(e)
             return f'{URL}/api?api={API}&link={link}'
 
+
 async def check_token(bot, userid, token):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
@@ -693,6 +841,7 @@ async def check_token(bot, userid, token):
     else:
         return False
 
+
 async def get_token(bot, userid, link):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
@@ -704,6 +853,7 @@ async def get_token(bot, userid, link):
     shortened_verify_url = await get_verify_shorted_link(link)
     return str(shortened_verify_url)
 
+
 async def verify_user(bot, userid, token):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
@@ -713,6 +863,7 @@ async def verify_user(bot, userid, token):
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
     VERIFIED[user.id] = str(today)
+
 
 async def check_verification(bot, userid):
     user = await bot.get_users(userid)
@@ -725,14 +876,14 @@ async def check_verification(bot, userid):
         EXP = VERIFIED[user.id]
         years, month, day = EXP.split('-')
         comp = date(int(years), int(month), int(day))
-        if comp<today:
+        if comp < today:
             return False
         else:
             return True
     else:
         return False
-    
-    
+
+
 async def send_all(bot, userid, files, ident, chat_id, user_name, query):
     settings = await get_settings(chat_id)
     if 'is_shortlink' in settings.keys():
@@ -745,38 +896,43 @@ async def send_all(bot, userid, files, ident, chat_id, user_name, query):
             for file in files:
                 title = file.file_name
                 size = get_size(file.file_size)
-                await bot.send_message(chat_id=userid, text=f"<b>Hᴇʏ ᴛʜᴇʀᴇ {user_name} 👋🏽 \n\n✅ Sᴇᴄᴜʀᴇ ʟɪɴᴋ ᴛᴏ ʏᴏᴜʀ ғɪʟᴇ ʜᴀs sᴜᴄᴄᴇssғᴜʟʟʏ ʙᴇᴇɴ ɢᴇɴᴇʀᴀᴛᴇᴅ ᴘʟᴇᴀsᴇ ᴄʟɪᴄᴋ ᴅᴏᴡɴʟᴏᴀᴅ ʙᴜᴛᴛᴏɴ\n\n🗃️ Fɪʟᴇ Nᴀᴍᴇ : {title}\n🔖 Fɪʟᴇ Sɪᴢᴇ : {size}</b>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📤 Dᴏᴡɴʟᴏᴀᴅ 📥", url=await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"))]]))
+                await bot.send_message(chat_id=userid,
+                                       text=f"<b>Hᴇʏ ᴛʜᴇʀᴇ {user_name} 👋🏽 \n\n✅ Sᴇᴄᴜʀᴇ ʟɪɴᴋ ᴛᴏ ʏᴏᴜʀ ғɪʟᴇ ʜᴀs sᴜᴄᴄᴇssғᴜʟʟʏ ʙᴇᴇɴ ɢᴇɴᴇʀᴀᴛᴇᴅ ᴘʟᴇᴀsᴇ ᴄʟɪᴄᴋ ᴅᴏᴡɴʟᴏᴀᴅ ʙᴜᴛᴛᴏɴ\n\n🗃️ Fɪʟᴇ Nᴀᴍᴇ : {title}\n🔖 Fɪʟᴇ Sɪᴢᴇ : {size}</b>",
+                                       reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📤 Dᴏᴡɴʟᴏᴀᴅ 📥",
+                                                                                                url=await get_shortlink(
+                                                                                                    chat_id,
+                                                                                                    f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"))]]))
         else:
             for file in files:
-                    f_caption = file.caption
-                    title = file.file_name
-                    size = get_size(file.file_size)
-                    if CUSTOM_FILE_CAPTION:
-                        try:
-                            f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
-                                                                    file_size='' if size is None else size,
-                                                                    file_caption='' if f_caption is None else f_caption)
-                        except Exception as e:
-                            print(e)
-                            f_caption = f_caption
-                    if f_caption is None:
-                        f_caption = f"{title}"
-                    await bot.send_cached_media(
-                        chat_id=userid,
-                        file_id=file.file_id,
-                        caption=f_caption,
-                        protect_content=True if ident == "filep" else False,
-                        reply_markup=InlineKeyboardMarkup(
+                f_caption = file.caption
+                title = file.file_name
+                size = get_size(file.file_size)
+                if CUSTOM_FILE_CAPTION:
+                    try:
+                        f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
+                                                               file_size='' if size is None else size,
+                                                               file_caption='' if f_caption is None else f_caption)
+                    except Exception as e:
+                        print(e)
+                        f_caption = f_caption
+                if f_caption is None:
+                    f_caption = f"{title}"
+                await bot.send_cached_media(
+                    chat_id=userid,
+                    file_id=file.file_id,
+                    caption=f_caption,
+                    protect_content=True if ident == "filep" else False,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
                             [
-                                [
                                 InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=GRP_LNK),
                                 InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                            ],[
-                                InlineKeyboardButton("Bᴏᴛ Oᴡɴᴇʀ", url="t.me/Kgashok04")
-                                ]
-                            ]
-                        )
+                            ], [
+                            InlineKeyboardButton("Bᴏᴛ Oᴡɴᴇʀ", url="t.me/Kgashok04")
+                        ]
+                        ]
                     )
+                )
     except UserIsBlocked:
         await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
     except PeerIdInvalid:

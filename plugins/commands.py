@@ -8,51 +8,63 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import *
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, GRP_LNK, REQST_CHANNEL, SUPPORT_CHAT_ID, SUPPORT_CHAT, MAX_B_TN, VERIFY, SHORTLINK_API, SHORTLINK_URL, TUTORIAL, IS_TUTORIAL, PREMIUM_USER
-from utils import get_settings, get_size, is_subscribed, save_group_settings, temp, verify_user, check_token, check_verification, get_token, get_shortlink, get_tutorial
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, \
+    PROTECT_CONTENT, CHNL_LNK, GRP_LNK, REQST_CHANNEL, SUPPORT_CHAT_ID, SUPPORT_CHAT, MAX_B_TN, VERIFY, SHORTLINK_API, \
+    SHORTLINK_URL, TUTORIAL, IS_TUTORIAL, PREMIUM_USER
+from utils import get_settings, get_size, is_subscribed, save_group_settings, temp, verify_user, check_token, \
+    check_verification, get_token, get_shortlink, get_tutorial, forcedjoined
 from database.connections_mdb import active_connection
 # from plugins.pm_filter import ENABLE_SHORTLINK
 import re, asyncio, os, sys
 import json
 import base64
+
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
+
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         buttons = [[
-                    InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-                ],[
-                    InlineKeyboardButton('👻 ᴍᴏᴠɪᴇ ᴄʜᴀɴɴᴇʟ', url="https://t.me/Movies7x"),
-                    InlineKeyboardButton('🫨 ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=GRP_LNK)
-                ],[
-                    InlineKeyboardButton('🔻 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ 🔻', url=CHNL_LNK)
-                  ]]
+            InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+        ], [
+            InlineKeyboardButton('👻 ᴍᴏᴠɪᴇ ᴄʜᴀɴɴᴇʟ', url="https://t.me/Movies7x"),
+            InlineKeyboardButton('🫨 ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=GRP_LNK)
+        ], [
+            InlineKeyboardButton('🔻 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ 🔻', url=CHNL_LNK)
+        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply(script.START_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
-        await asyncio.sleep(2) # 😢 https://github.com/EvamariaTG/EvaMaria/blob/master/plugins/p_ttishow.py#L17 😬 wait a bit, before checking.
+        await message.reply(
+            script.START_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME,
+                                    temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
+        await asyncio.sleep(
+            2)  # 😢 https://github.com/EvamariaTG/EvaMaria/blob/master/plugins/p_ttishow.py#L17 😬 wait a bit, before checking.
         if not await db.get_chat(message.chat.id):
-            total=await client.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
+            total = await client.get_chat_members_count(message.chat.id)
+            await client.send_message(LOG_CHANNEL,
+                                      script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))
             await db.add_chat(message.chat.id, message.chat.title)
-        return 
+        return
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
-        await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+        await client.send_message(LOG_CHANNEL,
+                                  script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+    if not await forcedjoined(client, message, f"https://t.me/{client.me.username}?start={message.text.split(maxsplit=1)[1:][0]}" if len(message.text.split(maxsplit=1)) > 1 else ""):
+        return
     if len(message.command) != 2:
         buttons = [[
-                    InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-                ],[
-                    InlineKeyboardButton('🍂ᴜᴘᴅᴀᴛᴇ 🍂', url=CHNL_LNK),
-                    InlineKeyboardButton('🫨 ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=GRP_LNK)
-                ],[
-                    InlineKeyboardButton('👻 ʜᴇʟᴘ', callback_data='help'),
-                    InlineKeyboardButton('👾 ᴀʙᴏᴜᴛ', callback_data='about')
-                ],[
-                    InlineKeyboardButton('💰 ᴇᴀʀɴ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ 💸', callback_data="shortlink_info")
-                  ]]
+            InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+        ], [
+            InlineKeyboardButton('🍂ᴜᴘᴅᴀᴛᴇ 🍂', url=CHNL_LNK),
+            InlineKeyboardButton('🫨 ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=GRP_LNK)
+        ], [
+            InlineKeyboardButton('👻 ʜᴇʟᴘ', callback_data='help'),
+            InlineKeyboardButton('👾 ᴀʙᴏᴜᴛ', callback_data='about')
+        ], [
+            InlineKeyboardButton('💰 ᴇᴀʀɴ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ 💸', callback_data="shortlink_info")
+        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=random.choice(PICS),
@@ -78,30 +90,31 @@ async def start(client, message):
         if message.command[1] != "subscribe":
             try:
                 kk, file_id = message.command[1].split("_", 1)
-                pre = 'checksubp' if kk == 'filep' else 'checksub' 
+                pre = 'checksubp' if kk == 'filep' else 'checksub'
                 btn.append([InlineKeyboardButton("↻ Tʀʏ Aɢᴀɪɴ", callback_data=f"{pre}#{file_id}")])
             except (IndexError, ValueError):
-                btn.append([InlineKeyboardButton("↻ Tʀʏ Aɢᴀɪɴ", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
+                btn.append(
+                    [InlineKeyboardButton("↻ Tʀʏ Aɢᴀɪɴ", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
         await client.send_message(
             chat_id=message.from_user.id,
             text="**Pʟᴇᴀsᴇ Jᴏɪɴ Oᴜʀ Bᴀᴄᴋ-Uᴘ Cʜᴀɴɴᴇʟ 🎗 Tʜᴇɴ Gᴏ Bᴀᴄᴋ Tᴏ Gʀᴏᴜᴘ Aɴᴅ Rᴇǫᴜᴇsᴛ AGᴀɪɴ.Yᴏᴜ'ʟʟ Gᴇᴛ Yᴏᴜʀ Fɪʟᴇ 🔆**",
             reply_markup=InlineKeyboardMarkup(btn),
             parse_mode=enums.ParseMode.MARKDOWN
-            )
+        )
         return
     if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
         buttons = [[
-                    InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-                ],[
-                    InlineKeyboardButton('🍂 ᴜᴘᴅᴀᴛᴇ🍂', url=CHNL_LNK),
-                    InlineKeyboardButton('🫨 ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=GRP_LNK)
-                ],[
-                    InlineKeyboardButton('👻 ʜᴇʟᴘ', callback_data='help'),
-                    InlineKeyboardButton('👾 ʜᴇʟᴘ', callback_data='about')
-                ],[
-                    InlineKeyboardButton('💰 ᴇᴀʀɴ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ 💸', callback_data="shortlink_info")
-                  ]]
-        reply_markup = InlineKeyboardMarkup(buttons)      
+            InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+        ], [
+            InlineKeyboardButton('🍂 ᴜᴘᴅᴀᴛᴇ🍂', url=CHNL_LNK),
+            InlineKeyboardButton('🫨 ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=GRP_LNK)
+        ], [
+            InlineKeyboardButton('👻 ʜᴇʟᴘ', callback_data='help'),
+            InlineKeyboardButton('👾 ʜᴇʟᴘ', callback_data='about')
+        ], [
+            InlineKeyboardButton('💰 ᴇᴀʀɴ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ 💸', callback_data="shortlink_info")
+        ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=random.choice(PICS),
             caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
@@ -121,9 +134,9 @@ async def start(client, message):
         msgs = BATCH_FILES.get(file_id)
         if not msgs:
             file = await client.download_media(file_id)
-            try: 
+            try:
                 with open(file) as file_data:
-                    msgs=json.loads(file_data.read())
+                    msgs = json.loads(file_data.read())
             except:
                 await sts.edit("FAILED")
                 return await client.send_message(LOG_CHANNEL, "UNABLE TO OPEN FILE.")
@@ -131,14 +144,16 @@ async def start(client, message):
             BATCH_FILES[file_id] = msgs
         for msg in msgs:
             title = msg.get("title")
-            size=get_size(int(msg.get("size", 0)))
-            f_caption=msg.get("caption", "")
+            size = get_size(int(msg.get("size", 0)))
+            f_caption = msg.get("caption", "")
             if BATCH_FILE_CAPTION:
                 try:
-                    f_caption=BATCH_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+                    f_caption = BATCH_FILE_CAPTION.format(file_name='' if title is None else title,
+                                                          file_size='' if size is None else size,
+                                                          file_caption='' if f_caption is None else f_caption)
                 except Exception as e:
                     logger.exception(e)
-                    f_caption=f_caption
+                    f_caption = f_caption
             if f_caption is None:
                 f_caption = f"{title}"
             try:
@@ -149,12 +164,12 @@ async def start(client, message):
                     protect_content=msg.get('protect', False),
                     reply_markup=InlineKeyboardMarkup(
                         [
-                         [
-                          InlineKeyboardButton('⛔️ ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ ⛔️', url=f'https://t.me/{SUPPORT_CHAT}'),
-                          InlineKeyboardButton('🫨ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                       ],[
-                          InlineKeyboardButton("😇ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ😇", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
-                         ]
+                            [
+                                InlineKeyboardButton('⛔️ ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ ⛔️', url=f'https://t.me/{SUPPORT_CHAT}'),
+                                InlineKeyboardButton('🫨ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                            ], [
+                            InlineKeyboardButton("😇ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ😇", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
+                        ]
                         ]
                     )
                 )
@@ -168,22 +183,22 @@ async def start(client, message):
                     protect_content=msg.get('protect', False),
                     reply_markup=InlineKeyboardMarkup(
                         [
-                         [
-                          InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                          InlineKeyboardButton('ᴍᴏᴠɪᴇ ᴄʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                       ],[
-                          InlineKeyboardButton("😇ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ😇", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
-                         ]
+                            [
+                                InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
+                                InlineKeyboardButton('ᴍᴏᴠɪᴇ ᴄʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                            ], [
+                            InlineKeyboardButton("😇ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ😇", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
+                        ]
                         ]
                     )
                 )
             except Exception as e:
                 logger.warning(e, exc_info=True)
                 continue
-            await asyncio.sleep(1) 
+            await asyncio.sleep(1)
         await sts.delete()
         return
-    
+
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("<b>Please wait...</b>")
         b_string = data.split("-", 1)[1]
@@ -199,7 +214,9 @@ async def start(client, message):
                 media = getattr(msg, msg.media.value)
                 if BATCH_FILE_CAPTION:
                     try:
-                        f_caption=BATCH_FILE_CAPTION.format(file_name=getattr(media, 'file_name', ''), file_size=getattr(media, 'file_size', ''), file_caption=getattr(msg, 'caption', ''))
+                        f_caption = BATCH_FILE_CAPTION.format(file_name=getattr(media, 'file_name', ''),
+                                                              file_size=getattr(media, 'file_size', ''),
+                                                              file_caption=getattr(msg, 'caption', ''))
                     except Exception as e:
                         logger.exception(e)
                         f_caption = getattr(msg, 'caption', '')
@@ -208,10 +225,12 @@ async def start(client, message):
                     file_name = getattr(media, 'file_name', '')
                     f_caption = getattr(msg, 'caption', file_name)
                 try:
-                    await msg.copy(message.chat.id, caption=f_caption, protect_content=True if protect == "/pbatch" else False)
+                    await msg.copy(message.chat.id, caption=f_caption,
+                                   protect_content=True if protect == "/pbatch" else False)
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
-                    await msg.copy(message.chat.id, caption=f_caption, protect_content=True if protect == "/pbatch" else False)
+                    await msg.copy(message.chat.id, caption=f_caption,
+                                   protect_content=True if protect == "/pbatch" else False)
                 except Exception as e:
                     logger.exception(e)
                     continue
@@ -226,7 +245,7 @@ async def start(client, message):
                 except Exception as e:
                     logger.exception(e)
                     continue
-            await asyncio.sleep(1) 
+            await asyncio.sleep(1)
         return await sts.delete()
 
     elif data.split("-", 1)[0] == "verify":
@@ -261,41 +280,47 @@ async def start(client, message):
             g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}", True)
         else:
             g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}", False)
-        k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}\n\n<i>Note: This message is deleted in 5 mins to avoid copyrights. Save the link to Somewhere else</i></b>", reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton('📁 ᴍᴏᴠɪᴇ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 📁', url=g)
-                    ], [
-                        InlineKeyboardButton('🤔 Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ 🤔', url=await get_tutorial(chat_id))
-                    ]
-                ]
-            )
-        )
+        k = await client.send_message(chat_id=message.from_user.id,
+                                      text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}\n\n<i>Note: This message is deleted in 5 mins to avoid copyrights. Save the link to Somewhere else</i></b>",
+                                      reply_markup=InlineKeyboardMarkup(
+                                          [
+                                              [
+                                                  InlineKeyboardButton('📁 ᴍᴏᴠɪᴇ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 📁', url=g)
+                                              ], [
+                                              InlineKeyboardButton('🤔 Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ 🤔',
+                                                                   url=await get_tutorial(chat_id))
+                                          ]
+                                          ]
+                                      )
+                                      )
         await asyncio.sleep(300)
         await k.edit("<b>Your message is successfully deleted!!!</b>")
         return
-        
-    
+
+
     elif data.startswith("short"):
         user = message.from_user.id
         chat_id = temp.SHORT.get(user)
         files_ = await get_file_details(file_id)
         files = files_[0]
         g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=file_{file_id}")
-        k = await client.send_message(chat_id=user,text=f"<b>📕Nᴀᴍᴇ ➠ : <code>{files.file_name}</code> \n\n🔗Sɪᴢᴇ ➠ : {get_size(files.file_size)}\n\n📂Fɪʟᴇ ʟɪɴᴋ ➠ : {g}\n\n<i>Note: ⚠️ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇᴅ ᴀғᴛᴇʀ 𝟷𝟶 ᴍɪɴᴜᴛᴇs.</i></b>", reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton('📂 ᴍᴏᴠɪᴇ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 📂', url=g)
-                    ], [
-                        InlineKeyboardButton('🤔 Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ 🤔', url=await get_tutorial(chat_id))
-                    ]
-                ]
-            )
-        )
+        k = await client.send_message(chat_id=user,
+                                      text=f"<b>📕Nᴀᴍᴇ ➠ : <code>{files.file_name}</code> \n\n🔗Sɪᴢᴇ ➠ : {get_size(files.file_size)}\n\n📂Fɪʟᴇ ʟɪɴᴋ ➠ : {g}\n\n<i>Note: ⚠️ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇᴅ ᴀғᴛᴇʀ 𝟷𝟶 ᴍɪɴᴜᴛᴇs.</i></b>",
+                                      reply_markup=InlineKeyboardMarkup(
+                                          [
+                                              [
+                                                  InlineKeyboardButton('📂 ᴍᴏᴠɪᴇ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 📂', url=g)
+                                              ], [
+                                              InlineKeyboardButton('🤔 Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ 🤔',
+                                                                   url=await get_tutorial(chat_id))
+                                          ]
+                                          ]
+                                      )
+                                      )
         await asyncio.sleep(600)
         await k.edit("<b>Your message is successfully deleted!!!</b>")
         return
-        
+
     elif data.startswith("all"):
         files = temp.GETALL.get(file_id)
         if not files:
@@ -305,21 +330,25 @@ async def start(client, message):
             file_id = file.file_id
             files_ = await get_file_details(file_id)
             files1 = files_[0]
-            title = ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files1.file_name.split()))
-            size=get_size(files1.file_size)
-            f_caption=files1.caption
+            title = ' '.join(
+                filter(lambda x: not x.startswith('[') and not x.startswith('@'), files1.file_name.split()))
+            size = get_size(files1.file_size)
+            f_caption = files1.caption
             if CUSTOM_FILE_CAPTION:
                 try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+                    f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
+                                                           file_size='' if size is None else size,
+                                                           file_caption='' if f_caption is None else f_caption)
                 except Exception as e:
                     logger.exception(e)
-                    f_caption=f_caption
+                    f_caption = f_caption
             if f_caption is None:
                 f_caption = f"{' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files1.file_name.split()))}"
-            if not await check_verification(client, message.from_user.id) and VERIFY == True:           
+            if not await check_verification(client, message.from_user.id) and VERIFY == True:
                 btn = [
                     [
-                        InlineKeyboardButton("♻️ Vᴇʀɪғʏ ♻️", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=")),
+                        InlineKeyboardButton("♻️ Vᴇʀɪғʏ ♻️", url=await get_token(client, message.from_user.id,
+                                                                                 f"https://telegram.me/{temp.U_NAME}?start=")),
                         InlineKeyboardButton("⚠️ Hᴏᴡ Tᴏ Vᴇʀɪғʏ ⚠️", url='https://t.me/+YD39Py3A0UAxZmI1')
                     ]
                 ]
@@ -327,7 +356,7 @@ async def start(client, message):
                 await message.reply_photo(
                     photo="https://telegra.ph/file/949460a317433aad6412b.jpg",
                     caption=f"<b>Hᴇʟʟᴏ {message.from_user.mention},\nʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ,ᴘʟᴇᴀꜱᴇ ᴠᴇʀɪғʏ ɴᴏᴡ ᴀɴᴅ ɢᴇᴛ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇꜱꜱ ғᴏʀ ɴᴇxᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ...\nइस बाॅट को इस्तेमाल करने के लिए आपको ᴠᴇʀɪғʏ करना होगा नहीं तो आप इसका इस्तेमाल नहीं कर पाएंगे |</b>",
-                 #   protect_content=True,
+                    #   protect_content=True,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
                 return
@@ -338,26 +367,27 @@ async def start(client, message):
                 protect_content=True if pre == 'filep' else False,
                 reply_markup=InlineKeyboardMarkup(
                     [
-                     [
-                      InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                      InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                   ],[
-                      InlineKeyboardButton("ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
-                     ]
+                        [
+                            InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
+                            InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                        ], [
+                        InlineKeyboardButton("ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
+                    ]
                     ]
                 )
             )
             filesarr.append(msg)
-        k = await client.send_message(chat_id = message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie Files/Videos will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this ALL Files/Videos to your Saved Messages and Start Download there</i></b>")
+        k = await client.send_message(chat_id=message.from_user.id,
+                                      text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie Files/Videos will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this ALL Files/Videos to your Saved Messages and Start Download there</i></b>")
         await asyncio.sleep(600)
         for x in filesarr:
-           await x.delete()
+            await x.delete()
         await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
-        return    
-        
+        return
+
     elif data.startswith("files"):
         user = message.from_user.id
-        if temp.SHORT.get(user)==None:
+        if temp.SHORT.get(user) == None:
             await message.reply_text(text="<b>Please Search Again in Group</b>")
         else:
             chat_id = temp.SHORT.get(user)
@@ -366,28 +396,32 @@ async def start(client, message):
             files_ = await get_file_details(file_id)
             files = files_[0]
             g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=file_{file_id}")
-            k = await client.send_message(chat_id=message.from_user.id,text=f"<b>📕Nᴀᴍᴇ ➠ : <code>{files.file_name}</code> \n\n🔗Sɪᴢᴇ ➠ : {get_size(files.file_size)}\n\n📂Fɪʟᴇ ʟɪɴᴋ ➠ : {g}\n\n<i>Note: ⚠️ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇᴅ ᴀғᴛᴇʀ 𝟷𝟶 ᴍɪɴᴜᴛᴇs.</i></b>", reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton('📂 ᴍᴏᴠɪᴇ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 📂', url=g)
-                        ], [
-                            InlineKeyboardButton('🤔 Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ 🤔', url=await get_tutorial(chat_id))
-                        ]
-                    ]
-                )
-            )
+            k = await client.send_message(chat_id=message.from_user.id,
+                                          text=f"<b>📕Nᴀᴍᴇ ➠ : <code>{files.file_name}</code> \n\n🔗Sɪᴢᴇ ➠ : {get_size(files.file_size)}\n\n📂Fɪʟᴇ ʟɪɴᴋ ➠ : {g}\n\n<i>Note: ⚠️ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇᴅ ᴀғᴛᴇʀ 𝟷𝟶 ᴍɪɴᴜᴛᴇs.</i></b>",
+                                          reply_markup=InlineKeyboardMarkup(
+                                              [
+                                                  [
+                                                      InlineKeyboardButton('📂 ᴍᴏᴠɪᴇ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 📂', url=g)
+                                                  ], [
+                                                  InlineKeyboardButton('🤔 Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ 🤔',
+                                                                       url=await get_tutorial(chat_id))
+                                              ]
+                                              ]
+                                          )
+                                          )
             await asyncio.sleep(1200)
             await k.edit("<b>Your message is successfully deleted!!!</b>")
             return
     user = message.from_user.id
-    files_ = await get_file_details(file_id)           
+    files_ = await get_file_details(file_id)
     if not files_:
         pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
         try:
-            if not await check_verification(client, message.from_user.id) and VERIFY == True:           
+            if not await check_verification(client, message.from_user.id) and VERIFY == True:
                 btn = [
                     [
-                        InlineKeyboardButton("♻️ Vᴇʀɪғʏ ♻️", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=")),
+                        InlineKeyboardButton("♻️ Vᴇʀɪғʏ ♻️", url=await get_token(client, message.from_user.id,
+                                                                                 f"https://telegram.me/{temp.U_NAME}?start=")),
                         InlineKeyboardButton("⚠️ Hᴏᴡ Tᴏ Vᴇʀɪғʏ ⚠️", url='https://t.me/+YD39Py3A0UAxZmI1')
                     ]
                 ]
@@ -395,7 +429,7 @@ async def start(client, message):
                 await message.reply_photo(
                     photo="https://telegra.ph/file/949460a317433aad6412b.jpg",
                     caption=f"<b>Hᴇʟʟᴏ {message.from_user.mention},\nʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ,ᴘʟᴇᴀꜱᴇ ᴠᴇʀɪғʏ ɴᴏᴡ ᴀɴᴅ ɢᴇᴛ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇꜱꜱ ғᴏʀ ɴᴇxᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ...\nइस बाॅट को इस्तेमाल करने के लिए आपको ᴠᴇʀɪғʏ करना होगा नहीं तो आप इसका इस्तेमाल नहीं कर पाएंगे |</b>",
-               #     protect_content=True,
+                    #     protect_content=True,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
                 return
@@ -405,64 +439,74 @@ async def start(client, message):
                 protect_content=True if pre == 'filep' else False,
                 reply_markup=InlineKeyboardMarkup(
                     [
-                     [
-                      InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                      InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                   ],[
-                      InlineKeyboardButton("ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
-                     ]
+                        [
+                            InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
+                            InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                        ], [
+                        InlineKeyboardButton("ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
+                    ]
                     ]
                 )
             )
             filetype = msg.media
             file = getattr(msg, filetype.value)
-            title = '@Movies7x ' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), file.file_name.split()))
-            size=get_size(file.file_size)
+            title = '@Movies7x ' + ' '.join(
+                filter(lambda x: not x.startswith('[') and not x.startswith('@'), file.file_name.split()))
+            size = get_size(file.file_size)
             f_caption = f"<code>{title}</code>"
             if CUSTOM_FILE_CAPTION:
                 try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
+                    f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
+                                                           file_size='' if size is None else size, file_caption='')
                 except:
                     return
             await msg.edit_caption(f_caption)
             btn = [[
                 InlineKeyboardButton("Get File Again", callback_data=f'delfile#{file_id}')
             ]]
-            k = await msg.reply("<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie File/Video will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this File/Video to your Saved Messages and Start Download there</i></b>",quote=True)
+            k = await msg.reply(
+                "<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie File/Video will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this File/Video to your Saved Messages and Start Download there</i></b>",
+                quote=True)
             await asyncio.sleep(600)
             await msg.delete()
-            await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
+            await k.edit_text(
+                "<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",
+                reply_markup=InlineKeyboardMarkup(btn))
             return
         except:
             pass
         return await message.reply('No such file exist.')
     files = files_[0]
-    title = '@Movies7x ' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files.file_name.split()))
-    size=get_size(files.file_size)
-    f_caption=files.caption
+    title = '@Movies7x ' + ' '.join(
+        filter(lambda x: not x.startswith('[') and not x.startswith('@'), files.file_name.split()))
+    size = get_size(files.file_size)
+    f_caption = files.caption
     if CUSTOM_FILE_CAPTION:
         try:
-            f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+            f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
+                                                   file_size='' if size is None else size,
+                                                   file_caption='' if f_caption is None else f_caption)
         except Exception as e:
             logger.exception(e)
-            f_caption=f_caption
+            f_caption = f_caption
     if f_caption is None:
         f_caption = f"@Movies7x {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files.file_name.split()))}"
-    if not await check_verification(client, message.from_user.id) and VERIFY == True:           
-                btn = [
-                    [
-                        InlineKeyboardButton("♻️ Vᴇʀɪғʏ ♻️", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=")),
-                        InlineKeyboardButton("⚠️ Hᴏᴡ Tᴏ Vᴇʀɪғʏ ⚠️", url='https://t.me/+YD39Py3A0UAxZmI1')
-                    ]
-                ]
+    if not await check_verification(client, message.from_user.id) and VERIFY == True:
+        btn = [
+            [
+                InlineKeyboardButton("♻️ Vᴇʀɪғʏ ♻️", url=await get_token(client, message.from_user.id,
+                                                                         f"https://telegram.me/{temp.U_NAME}?start=")),
+                InlineKeyboardButton("⚠️ Hᴏᴡ Tᴏ Vᴇʀɪғʏ ⚠️", url='https://t.me/+YD39Py3A0UAxZmI1')
+            ]
+        ]
 
-                await message.reply_photo(
-                    photo="https://telegra.ph/file/949460a317433aad6412b.jpg",
-                    caption=f"<b>Hᴇʟʟᴏ {message.from_user.mention},\nʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ,ᴘʟᴇᴀꜱᴇ ᴠᴇʀɪғʏ ɴᴏᴡ ᴀɴᴅ ɢᴇᴛ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇꜱꜱ ғᴏʀ ɴᴇxᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ...\nइस बाॅट को इस्तेमाल करने के लिए आपको ᴠᴇʀɪғʏ करना होगा नहीं तो आप इसका इस्तेमाल नहीं कर पाएंगे |</b>",
-              #      protect_content=True,
-                    reply_markup=InlineKeyboardMarkup(btn)
-                )
-                return
+        await message.reply_photo(
+            photo="https://telegra.ph/file/949460a317433aad6412b.jpg",
+            caption=f"<b>Hᴇʟʟᴏ {message.from_user.mention},\nʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ,ᴘʟᴇᴀꜱᴇ ᴠᴇʀɪғʏ ɴᴏᴡ ᴀɴᴅ ɢᴇᴛ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇꜱꜱ ғᴏʀ ɴᴇxᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ...\nइस बाॅट को इस्तेमाल करने के लिए आपको ᴠᴇʀɪғʏ करना होगा नहीं तो आप इसका इस्तेमाल नहीं कर पाएंगे |</b>",
+            #      protect_content=True,
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
+        return
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
@@ -470,27 +514,31 @@ async def start(client, message):
         protect_content=True if pre == 'filep' else False,
         reply_markup=InlineKeyboardMarkup(
             [
-             [
-              InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-              InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
-           ],[
-              InlineKeyboardButton("ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
-             ]
+                [
+                    InlineKeyboardButton('🫨ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
+                    InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                ], [
+                InlineKeyboardButton("ᴍᴏᴠɪᴇ ʀᴇQᴜᴇꜱᴛ ɢʀᴏᴜᴘ", url="https://t.me/+P-zPGy3Gjy1kOWQ9")
+            ]
             ]
         )
     )
     btn = [[
         InlineKeyboardButton("Get File Again", callback_data=f'delfile#{file_id}')
     ]]
-    k = await msg.reply("<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie File/Video will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this File/Video to your Saved Messages and Start Download there</i></b>",quote=True)
+    k = await msg.reply(
+        "<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie File/Video will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this File/Video to your Saved Messages and Start Download there</i></b>",
+        quote=True)
     await asyncio.sleep(600)
     await msg.delete()
-    await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
-    return   
+    await k.edit_text(
+        "<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",
+        reply_markup=InlineKeyboardMarkup(btn))
+    return
+
 
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
-           
     """Send basic information of channel"""
     if isinstance(CHANNELS, (int, str)):
         channels = [CHANNELS]
@@ -527,6 +575,7 @@ async def log_file(bot, message):
     except Exception as e:
         await message.reply(str(e))
 
+
 @Client.on_message(filters.command('delete') & filters.user(ADMINS))
 async def delete(bot, message):
     """Delete file from database"""
@@ -544,7 +593,7 @@ async def delete(bot, message):
     else:
         await msg.edit('This is not supported file format')
         return
-    
+
     file_id, file_ref = unpack_new_file_id(media.file_id)
 
     result = await Media.collection.delete_one({
@@ -558,7 +607,7 @@ async def delete(bot, message):
             'file_name': file_name,
             'file_size': media.file_size,
             'mime_type': media.mime_type
-            })
+        })
         if result.deleted_count:
             await msg.edit('File is successfully deleted from database')
         else:
@@ -639,7 +688,7 @@ async def settings(client, message):
             and str(userid) not in ADMINS
     ):
         return
-    
+
     settings = await get_settings(grp_id)
 
     try:
@@ -758,9 +807,9 @@ async def settings(client, message):
         ]
 
         btn = [[
-                InlineKeyboardButton("Oᴘᴇɴ Hᴇʀᴇ ↓", callback_data=f"opnsetgrp#{grp_id}"),
-                InlineKeyboardButton("Oᴘᴇɴ Iɴ PM ⇲", callback_data=f"opnsetpm#{grp_id}")
-              ]]
+            InlineKeyboardButton("Oᴘᴇɴ Hᴇʀᴇ ↓", callback_data=f"opnsetgrp#{grp_id}"),
+            InlineKeyboardButton("Oᴘᴇɴ Iɴ PM ⇲", callback_data=f"opnsetpm#{grp_id}")
+        ]]
 
         reply_markup = InlineKeyboardMarkup(buttons)
         if chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
@@ -779,7 +828,6 @@ async def settings(client, message):
                 parse_mode=enums.ParseMode.HTML,
                 reply_to_message_id=message.id
             )
-
 
 
 @Client.on_message(filters.command('set_template'))
@@ -826,9 +874,10 @@ async def save_template(client, message):
     await sts.edit(f"Successfully changed template for {title} to\n\n{template}")
 
 
-@Client.on_message((filters.command(["request", "Request"]) | filters.regex("#request") | filters.regex("#Request")) & filters.group)
+@Client.on_message(
+    (filters.command(["request", "Request"]) | filters.regex("#request") | filters.regex("#Request")) & filters.group)
 async def requests(bot, message):
-    if REQST_CHANNEL is None or SUPPORT_CHAT_ID is None: return # Must add REQST_CHANNEL and SUPPORT_CHAT_ID to use this feature
+    if REQST_CHANNEL is None or SUPPORT_CHAT_ID is None: return  # Must add REQST_CHANNEL and SUPPORT_CHAT_ID to use this feature
     if message.reply_to_message and SUPPORT_CHAT_ID == message.chat.id:
         chat_id = message.chat.id
         reporter = str(message.from_user.id)
@@ -838,28 +887,33 @@ async def requests(bot, message):
         try:
             if REQST_CHANNEL is not None:
                 btn = [[
-                        InlineKeyboardButton('View Request', url=f"{message.reply_to_message.link}"),
-                        InlineKeyboardButton('Show Options', callback_data=f'show_option#{reporter}')
-                      ]]
-                reported_post = await bot.send_message(chat_id=REQST_CHANNEL, text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>", reply_markup=InlineKeyboardMarkup(btn))
+                    InlineKeyboardButton('View Request', url=f"{message.reply_to_message.link}"),
+                    InlineKeyboardButton('Show Options', callback_data=f'show_option#{reporter}')
+                ]]
+                reported_post = await bot.send_message(chat_id=REQST_CHANNEL,
+                                                       text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>",
+                                                       reply_markup=InlineKeyboardMarkup(btn))
                 success = True
             elif len(content) >= 3:
                 for admin in ADMINS:
                     btn = [[
                         InlineKeyboardButton('View Request', url=f"{message.reply_to_message.link}"),
                         InlineKeyboardButton('Show Options', callback_data=f'show_option#{reporter}')
-                      ]]
-                    reported_post = await bot.send_message(chat_id=admin, text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>", reply_markup=InlineKeyboardMarkup(btn))
+                    ]]
+                    reported_post = await bot.send_message(chat_id=admin,
+                                                           text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>",
+                                                           reply_markup=InlineKeyboardMarkup(btn))
                     success = True
             else:
                 if len(content) < 3:
-                    await message.reply_text("<b>You must type about your request [Minimum 3 Characters]. Requests can't be empty.</b>")
+                    await message.reply_text(
+                        "<b>You must type about your request [Minimum 3 Characters]. Requests can't be empty.</b>")
             if len(content) < 3:
                 success = False
         except Exception as e:
             await message.reply_text(f"Error: {e}")
             pass
-        
+
     elif SUPPORT_CHAT_ID == message.chat.id:
         chat_id = message.chat.id
         reporter = str(message.from_user.id)
@@ -873,22 +927,27 @@ async def requests(bot, message):
         try:
             if REQST_CHANNEL is not None and len(content) >= 3:
                 btn = [[
-                        InlineKeyboardButton('View Request', url=f"{message.link}"),
-                        InlineKeyboardButton('Show Options', callback_data=f'show_option#{reporter}')
-                      ]]
-                reported_post = await bot.send_message(chat_id=REQST_CHANNEL, text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>", reply_markup=InlineKeyboardMarkup(btn))
+                    InlineKeyboardButton('View Request', url=f"{message.link}"),
+                    InlineKeyboardButton('Show Options', callback_data=f'show_option#{reporter}')
+                ]]
+                reported_post = await bot.send_message(chat_id=REQST_CHANNEL,
+                                                       text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>",
+                                                       reply_markup=InlineKeyboardMarkup(btn))
                 success = True
             elif len(content) >= 3:
                 for admin in ADMINS:
                     btn = [[
                         InlineKeyboardButton('View Request', url=f"{message.link}"),
                         InlineKeyboardButton('Show Options', callback_data=f'show_option#{reporter}')
-                      ]]
-                    reported_post = await bot.send_message(chat_id=admin, text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>", reply_markup=InlineKeyboardMarkup(btn))
+                    ]]
+                    reported_post = await bot.send_message(chat_id=admin,
+                                                           text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>",
+                                                           reply_markup=InlineKeyboardMarkup(btn))
                     success = True
             else:
                 if len(content) < 3:
-                    await message.reply_text("<b>You must type about your request [Minimum 3 Characters]. Requests can't be empty.</b>")
+                    await message.reply_text(
+                        "<b>You must type about your request [Minimum 3 Characters]. Requests can't be empty.</b>")
             if len(content) < 3:
                 success = False
         except Exception as e:
@@ -897,7 +956,7 @@ async def requests(bot, message):
 
     else:
         success = False
-    
+
     if success:
         '''if isinstance(REQST_CHANNEL, (int, str)):
             channels = [REQST_CHANNEL]
@@ -908,11 +967,14 @@ async def requests(bot, message):
         #chat = int(chat)'''
         link = await bot.create_chat_invite_link(int(REQST_CHANNEL))
         btn = [[
-                InlineKeyboardButton('Join Channel', url=link.invite_link),
-                InlineKeyboardButton('View Request', url=f"{reported_post.link}")
-              ]]
-        await message.reply_text("<b>Your request has been added! Please wait for some time.\n\nJoin Channel First & View Request</b>", reply_markup=InlineKeyboardMarkup(btn))
-    
+            InlineKeyboardButton('Join Channel', url=link.invite_link),
+            InlineKeyboardButton('View Request', url=f"{reported_post.link}")
+        ]]
+        await message.reply_text(
+            "<b>Your request has been added! Please wait for some time.\n\nJoin Channel First & View Request</b>",
+            reply_markup=InlineKeyboardMarkup(btn))
+
+
 @Client.on_message(filters.command("send") & filters.user(ADMINS))
 async def send_msg(bot, message):
     if message.reply_to_message:
@@ -937,34 +999,40 @@ async def send_msg(bot, message):
         except Exception as e:
             await message.reply_text(f"<b>Error: {e}</b>")
     else:
-        await message.reply_text("<b>Use this command as a reply to any message using the target chat id. For eg: /send userid</b>")
+        await message.reply_text(
+            "<b>Use this command as a reply to any message using the target chat id. For eg: /send userid</b>")
+
 
 @Client.on_message(filters.command("deletefiles") & filters.user(ADMINS))
 async def deletemultiplefiles(bot, message):
     chat_type = message.chat.type
     if chat_type != enums.ChatType.PRIVATE:
-        return await message.reply_text(f"<b>Hey {message.from_user.mention}, This command won't work in groups. It only works on my PM !</b>")
+        return await message.reply_text(
+            f"<b>Hey {message.from_user.mention}, This command won't work in groups. It only works on my PM !</b>")
     else:
         pass
     try:
         keyword = message.text.split(" ", 1)[1]
     except:
-        return await message.reply_text(f"<b>Hey {message.from_user.mention}, Give me a keyword along with the command to delete files.</b>")
-    k = await bot.send_message(chat_id=message.chat.id, text=f"<b>Fetching Files for your query {keyword} on DB... Please wait...</b>")
+        return await message.reply_text(
+            f"<b>Hey {message.from_user.mention}, Give me a keyword along with the command to delete files.</b>")
+    k = await bot.send_message(chat_id=message.chat.id,
+                               text=f"<b>Fetching Files for your query {keyword} on DB... Please wait...</b>")
     files, total = await get_bad_files(keyword)
     await k.delete()
-    #await k.edit_text(f"<b>Found {total} files for your query {keyword} !\n\nFile deletion process will start in 5 seconds !</b>")
-    #await asyncio.sleep(5)
+    # await k.edit_text(f"<b>Found {total} files for your query {keyword} !\n\nFile deletion process will start in 5 seconds !</b>")
+    # await asyncio.sleep(5)
     btn = [[
-       InlineKeyboardButton("Yes, Continue !", callback_data=f"killfilesdq#{keyword}")
-       ],[
-       InlineKeyboardButton("No, Abort operation !", callback_data="close_data")
+        InlineKeyboardButton("Yes, Continue !", callback_data=f"killfilesdq#{keyword}")
+    ], [
+        InlineKeyboardButton("No, Abort operation !", callback_data="close_data")
     ]]
     await message.reply_text(
         text=f"<b>Found {total} files for your query {keyword} !\n\nDo you want to delete?</b>",
         reply_markup=InlineKeyboardMarkup(btn),
         parse_mode=enums.ParseMode.HTML
     )
+
 
 @Client.on_message(filters.command("shortlink"))
 async def shortlink(bot, message):
@@ -973,7 +1041,8 @@ async def shortlink(bot, message):
         return await message.reply(f"You are anonymous admin. Turn off anonymous admin and try again this command")
     chat_type = message.chat.type
     if chat_type == enums.ChatType.PRIVATE:
-        return await message.reply_text(f"<b>Hey {message.from_user.mention}, This command only works on groups !\n\n<u>Follow These Steps to Connect Shortener:</u>\n\n1. Add Me in Your Group with Full Admin Rights\n\n2. After Adding in Grp, Set your Shortener\n\nSend this command in your group\n\n—> /shortlink ""{your_shortener_website_name} {your_shortener_api}\n\n#Sample:-\n/shortlink omnifly.in.net 1f1da5c9df9a58058672ac8d8134e203b03426a1\n\nThat's it!!! Enjoy Earning Money 💲\n\n[[[ Trusted Earning Site - https://bit.ly/mplaylink ]]]\n\nIf you have any Doubts, Feel Free to Ask me - @TeamHMT_Bot\n\n(Puriyala na intha bot la message pannunga - @TeamHMT_bot)</b>")
+        return await message.reply_text(
+            f"<b>Hey {message.from_user.mention}, This command only works on groups !\n\n<u>Follow These Steps to Connect Shortener:</u>\n\n1. Add Me in Your Group with Full Admin Rights\n\n2. After Adding in Grp, Set your Shortener\n\nSend this command in your group\n\n—> /shortlink ""{your_shortener_website_name} {your_shortener_api}\n\n#Sample:-\n/shortlink omnifly.in.net 1f1da5c9df9a58058672ac8d8134e203b03426a1\n\nThat's it!!! Enjoy Earning Money 💲\n\n[[[ Trusted Earning Site - https://bit.ly/mplaylink ]]]\n\nIf you have any Doubts, Feel Free to Ask me - @TeamHMT_Bot\n\n(Puriyala na intha bot la message pannunga - @TeamHMT_bot)</b>")
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         grpid = message.chat.id
         title = message.chat.title
@@ -982,22 +1051,27 @@ async def shortlink(bot, message):
     data = message.text
     userid = message.from_user.id
     user = await bot.get_chat_member(grpid, userid)
-    if user.status != enums.ChatMemberStatus.ADMINISTRATOR and user.status != enums.ChatMemberStatus.OWNER and str(userid) not in ADMINS:
-        return await message.reply_text("<b>You don't have access to use this command!\n\nAdd Me to Your Own Group as Admin and Try This Command\n\nFor More PM Me With This Command</b>")
+    if user.status != enums.ChatMemberStatus.ADMINISTRATOR and user.status != enums.ChatMemberStatus.OWNER and str(
+            userid) not in ADMINS:
+        return await message.reply_text(
+            "<b>You don't have access to use this command!\n\nAdd Me to Your Own Group as Admin and Try This Command\n\nFor More PM Me With This Command</b>")
     else:
         pass
     try:
         command, shortlink_url, api = data.split(" ")
     except:
-        return await message.reply_text("<b>Command Incomplete :(\n\nGive me a shortener website link and api along with the command !\n\nFormat: <code>/shortlink omnifly.in.net 1f1da5c9df9a58058672ac8d8134e203b03426a1</code></b>")
+        return await message.reply_text(
+            "<b>Command Incomplete :(\n\nGive me a shortener website link and api along with the command !\n\nFormat: <code>/shortlink omnifly.in.net 1f1da5c9df9a58058672ac8d8134e203b03426a1</code></b>")
     reply = await message.reply_text("<b>Please Wait...</b>")
     shortlink_url = re.sub(r"https?://?", "", shortlink_url)
     shortlink_url = re.sub(r"[:/]", "", shortlink_url)
     await save_group_settings(grpid, 'shortlink', shortlink_url)
     await save_group_settings(grpid, 'shortlink_api', api)
     await save_group_settings(grpid, 'is_shortlink', True)
-    await reply.edit_text(f"<b>Successfully added shortlink API for {title}.\n\nCurrent Shortlink Website: <code>{shortlink_url}</code>\nCurrent API: <code>{api}</code></b>")
-    
+    await reply.edit_text(
+        f"<b>Successfully added shortlink API for {title}.\n\nCurrent Shortlink Website: <code>{shortlink_url}</code>\nCurrent API: <code>{api}</code></b>")
+
+
 @Client.on_message(filters.command("setshortlinkoff") & filters.user(ADMINS))
 async def offshortlink(bot, message):
     chat_type = message.chat.type
@@ -1011,7 +1085,8 @@ async def offshortlink(bot, message):
     await save_group_settings(grpid, 'is_shortlink', False)
     # ENABLE_SHORTLINK = False
     return await message.reply_text("Successfully disabled shortlink")
-    
+
+
 @Client.on_message(filters.command("setshortlinkon") & filters.user(ADMINS))
 async def onshortlink(bot, message):
     chat_type = message.chat.type
@@ -1026,6 +1101,7 @@ async def onshortlink(bot, message):
     # ENABLE_SHORTLINK = True
     return await message.reply_text("Successfully enabled shortlink")
 
+
 @Client.on_message(filters.command("shortlink_info"))
 async def showshortlink(bot, message):
     userid = message.from_user.id if message.from_user else None
@@ -1033,42 +1109,49 @@ async def showshortlink(bot, message):
         return await message.reply(f"You are anonymous admin. Turn off anonymous admin and try again this command")
     chat_type = message.chat.type
     if chat_type == enums.ChatType.PRIVATE:
-        return await message.reply_text(f"<b>Hey {message.from_user.mention}, This Command Only Works in Group\n\nTry this command in your own group, if you are using me in your group</b>")
+        return await message.reply_text(
+            f"<b>Hey {message.from_user.mention}, This Command Only Works in Group\n\nTry this command in your own group, if you are using me in your group</b>")
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         grpid = message.chat.id
         title = message.chat.title
     else:
         return
-    chat_id=message.chat.id
+    chat_id = message.chat.id
     userid = message.from_user.id
     user = await bot.get_chat_member(grpid, userid)
-#     if 'shortlink' in settings.keys():
-#         su = settings['shortlink']
-#         sa = settings['shortlink_api']
-#     else:
-#         return await message.reply_text("<b>Shortener Url Not Connected\n\nYou can Connect Using /shortlink command</b>")
-#     if 'tutorial' in settings.keys():
-#         st = settings['tutorial']
-#     else:
-#         return await message.reply_text("<b>Tutorial Link Not Connected\n\nYou can Connect Using /set_tutorial command</b>")
-    if user.status != enums.ChatMemberStatus.ADMINISTRATOR and user.status != enums.ChatMemberStatus.OWNER and str(userid) not in ADMINS:
-        return await message.reply_text("<b>Tʜɪs ᴄᴏᴍᴍᴀɴᴅ Wᴏʀᴋs Oɴʟʏ Fᴏʀ ᴛʜɪs Gʀᴏᴜᴘ Oᴡɴᴇʀ/Aᴅᴍɪɴ\n\nTʀʏ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ɪɴ ʏᴏᴜʀ Oᴡɴ Gʀᴏᴜᴘ, Iғ Yᴏᴜ Aʀᴇ Usɪɴɢ Mᴇ Iɴ Yᴏᴜʀ Gʀᴏᴜᴘ</b>")
+    #     if 'shortlink' in settings.keys():
+    #         su = settings['shortlink']
+    #         sa = settings['shortlink_api']
+    #     else:
+    #         return await message.reply_text("<b>Shortener Url Not Connected\n\nYou can Connect Using /shortlink command</b>")
+    #     if 'tutorial' in settings.keys():
+    #         st = settings['tutorial']
+    #     else:
+    #         return await message.reply_text("<b>Tutorial Link Not Connected\n\nYou can Connect Using /set_tutorial command</b>")
+    if user.status != enums.ChatMemberStatus.ADMINISTRATOR and user.status != enums.ChatMemberStatus.OWNER and str(
+            userid) not in ADMINS:
+        return await message.reply_text(
+            "<b>Tʜɪs ᴄᴏᴍᴍᴀɴᴅ Wᴏʀᴋs Oɴʟʏ Fᴏʀ ᴛʜɪs Gʀᴏᴜᴘ Oᴡɴᴇʀ/Aᴅᴍɪɴ\n\nTʀʏ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ɪɴ ʏᴏᴜʀ Oᴡɴ Gʀᴏᴜᴘ, Iғ Yᴏᴜ Aʀᴇ Usɪɴɢ Mᴇ Iɴ Yᴏᴜʀ Gʀᴏᴜᴘ</b>")
     else:
-        settings = await get_settings(chat_id) #fetching settings for group
+        settings = await get_settings(chat_id)  # fetching settings for group
         if 'shortlink' in settings.keys() and 'tutorial' in settings.keys():
             su = settings['shortlink']
             sa = settings['shortlink_api']
             st = settings['tutorial']
-            return await message.reply_text(f"<b>Shortlink Website: <code>{su}</code>\n\nApi: <code>{sa}</code>\n\nTutorial: <code>{st}</code></b>")
+            return await message.reply_text(
+                f"<b>Shortlink Website: <code>{su}</code>\n\nApi: <code>{sa}</code>\n\nTutorial: <code>{st}</code></b>")
         elif 'shortlink' in settings.keys() and 'tutorial' not in settings.keys():
             su = settings['shortlink']
             sa = settings['shortlink_api']
-            return await message.reply_text(f"<b>Shortener Website: <code>{su}</code>\n\nApi: <code>{sa}</code>\n\nTutorial Link Not Connected\n\nYou can Connect Using /set_tutorial command</b>")
+            return await message.reply_text(
+                f"<b>Shortener Website: <code>{su}</code>\n\nApi: <code>{sa}</code>\n\nTutorial Link Not Connected\n\nYou can Connect Using /set_tutorial command</b>")
         elif 'shortlink' not in settings.keys() and 'tutorial' in settings.keys():
             st = settings['tutorial']
-            return await message.reply_text(f"<b>Tutorial: <code>{st}</code>\n\nShortener Url Not Connected\n\nYou can Connect Using /shortlink command</b>")
+            return await message.reply_text(
+                f"<b>Tutorial: <code>{st}</code>\n\nShortener Url Not Connected\n\nYou can Connect Using /shortlink command</b>")
         else:
-            return await message.reply_text("Shortener url and Tutorial Link Not Connected. Check this commands, /shortlink and /set_tutorial")
+            return await message.reply_text(
+                "Shortener url and Tutorial Link Not Connected. Check this commands, /shortlink and /set_tutorial")
 
 
 @Client.on_message(filters.command("set_tutorial"))
@@ -1086,24 +1169,28 @@ async def settutorial(bot, message):
         return
     userid = message.from_user.id
     user = await bot.get_chat_member(grpid, userid)
-    if user.status != enums.ChatMemberStatus.ADMINISTRATOR and user.status != enums.ChatMemberStatus.OWNER and str(userid) not in ADMINS:
+    if user.status != enums.ChatMemberStatus.ADMINISTRATOR and user.status != enums.ChatMemberStatus.OWNER and str(
+            userid) not in ADMINS:
         return
     else:
         pass
     if len(message.command) == 1:
-        return await message.reply("<b>Give me a tutorial link along with this command\n\nCommand Usage: /set_tutorial your tutorial link</b>")
+        return await message.reply(
+            "<b>Give me a tutorial link along with this command\n\nCommand Usage: /set_tutorial your tutorial link</b>")
     elif len(message.command) == 2:
         reply = await message.reply_text("<b>Please Wait...</b>")
         tutorial = message.command[1]
         await save_group_settings(grpid, 'tutorial', tutorial)
         await save_group_settings(grpid, 'is_tutorial', True)
-        await reply.edit_text(f"<b>Successfully Added Tutorial\n\nHere is your tutorial link for your group {title} - <code>{tutorial}</code></b>")
+        await reply.edit_text(
+            f"<b>Successfully Added Tutorial\n\nHere is your tutorial link for your group {title} - <code>{tutorial}</code></b>")
     else:
         return await message.reply("<b>You entered Incorrect Format\n\nFormat: /set_tutorial your tutorial link</b>")
-        
+
+
 @Client.on_message(filters.command("restart") & filters.user(ADMINS))
 async def stop_button(bot, message):
-    msg = await bot.send_message(text="**🔄 𝙿𝚁𝙾𝙲𝙴𝚂𝚂𝙴𝚂 𝚂𝚃𝙾𝙿𝙴𝙳. 𝙱𝙾𝚃 𝙸𝚂 𝚁𝙴𝚂𝚃𝙰𝚁𝚃𝙸𝙽𝙶...**", chat_id=message.chat.id)       
+    msg = await bot.send_message(text="**🔄 𝙿𝚁𝙾𝙲𝙴𝚂𝚂𝙴𝚂 𝚂𝚃𝙾𝙿𝙴𝙳. 𝙱𝙾𝚃 𝙸𝚂 𝚁𝙴𝚂𝚃𝙰𝚁𝚃𝙸𝙽𝙶...**", chat_id=message.chat.id)
     await asyncio.sleep(3)
     await msg.edit("**✅️ 𝙱𝙾𝚃 𝙸𝚂 𝚁𝙴𝚂𝚃𝙰𝚁𝚃𝙴𝙳. 𝙽𝙾𝚆 𝚈𝙾𝚄 𝙲𝙰𝙽 𝚄𝚂𝙴 𝙼𝙴**")
     os.execl(sys.executable, sys.executable, *sys.argv)
